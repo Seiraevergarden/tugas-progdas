@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventory Management</title>
+<style>
+    body { font-family: Arial, sans-serif; }
+    .container { max-width: 900px; margin: 20px auto; }
+    h1 { text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 8px; border: 1px solid #ddd; text-align: center; }
+    .warning { background-color:red; }
+    input[type="text"], input[type="number"], input[type="url"], select { width: 100%; padding: 5px; margin: 5px 0; }
+    button { padding: 5px 10px; margin: 5px 0; }
+</style>
+</head>
+<body>
+    <div style="border: 2px solid  black;
+    background-color: cyan;
+    width:1000px;
+    margin-inline: auto;
+    margin-top: 150px;
+    border-radius: 40px">
+
+   
+<div class="container">
+    <h1>Inventory Management</h1>
+    <form id="productForm">
+        <label>Nama Produk</label>
+        <input type="text" id="name"required>
+        <br>
+        <br>
+        <label>Stok Produk</label>
+        <input type="number" id="stock" required>
+        <br>
+        <br>
+        <label>Kategori Produk</label>
+        <input type="text" id="category" required>
+        <br>
+        <br>
+        <label>Harga Produk</label>
+        <input type="number" id="price"required>
+        <br>
+        <br>
+        <label>Satuan Produk</label>
+        <input type="text" id="unit"required>
+        <br>
+        <br>
+        <label>URL Gambar Produk</label>
+        <input type="url" id="imageUrl">
+        <br>
+        <br>
+        <button type="button" onclick="addProduct()">Tambah Produk</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Kode Produk</th>
+                <th>Nama Produk</th>
+                <th>Kategori</th>
+                <th>Harga</th>
+                <th>Satuan</th>
+                <th>Stok</th>
+                <th>Gambar</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="productTable"></tbody>
+    </table>
+</div>
+
+<script>
+    let products = [];
+    let productId = 1;
+
+    function addProduct() {
+        const name = (document.getElementById("name").value);
+        const stock = parseInt(document.getElementById("stock").value);
+        const category = document.getElementById("category").value;
+        const price = parseFloat(document.getElementById("price").value);
+        const unit = document.getElementById("unit").value;
+        const imageUrl = document.getElementById("imageUrl").value;
+
+        const product = {
+            id: "P" + String(productId).padStart(3, '0'),
+            name: name,
+            category: category,
+            price: price,
+            unit: unit,
+            stock: stock,
+            imageUrl: imageUrl
+        };
+
+        products.push(product);
+        productId++; 
+        renderTable();
+        
+        document.getElementById("productForm").reset();
+    }
+
+    function renderTable() {
+        const productTable = document.getElementById("productTable");
+        productTable.innerHTML = "";
+
+        products.forEach((product) => {
+            const row = document.createElement("tr");
+            row.className = product.stock < 5 ? "warning" : "";
+
+            row.innerHTML = `
+                <td>${product.id}</td>
+                <td>${product.name}</td>
+                <td>${product.category}</td>
+                <td>${product.price.toFixed(2)}</td>
+                <td>${product.unit}</td>
+                <td>${product.stock}</td>
+                <td><img src="${product.imageUrl}" alt="Gambar Produk" style="width:50px; height:50px;"></td>
+                <td>
+                    <button onclick="editProduct('${product.id}')">Edit</button>
+                    <button onclick="deleteProduct('${product.id}')">Hapus</button>
+                </td>
+            `;
+            productTable.appendChild(row);
+        });
+    }
+
+    function editProduct(id) {
+        const product = products.find(p => p.id === id);
+        document.getElementById("name").value = product.name;
+        document.getElementById("stock").value = product.stock;
+        document.getElementById("category").value = product.category;
+        document.getElementById("price").value = product.price;
+        document.getElementById("unit").value = product.unit;
+        document.getElementById("imageUrl").value = product.imageUrl;
+
+        deleteProduct(id);
+    }
+
+    function deleteProduct(id) {
+        products = products.filter(product => product.id !== id);
+        renderTable();
+    }
+</script>
+
+</body>
+</html>
